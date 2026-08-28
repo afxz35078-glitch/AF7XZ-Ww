@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Discord Bot Panel</title>
+    <style>
+        body { background: #0f172a; color: #fff; font-family: sans-serif; padding: 20px; }
+        .box { background: #1e293b; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        input, textarea { width: 100%; background: #0f172a; color: #38bdf8; border: 1px solid #334155; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        textarea { height: 180px; }
+        button { background: #0284c7; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+        .terminal { background: #000; color: #4ade80; padding: 15px; height: 200px; overflow-y: auto; font-family: monospace; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>🚀 Discord Bot Panel</h2>
+        <input type="password" id="token" placeholder="Paste Bot Token Here">
+        <textarea id="code">// Write discord.js code here...</textarea>
+        <button onclick="hostBot()">Start Bot</button>
+        <button onclick="stopBot()" style="background:#dc2626;">Stop Bot</button>
+    </div>
+    <div class="box">
+        <h3>Live Terminal</h3>
+        <div class="terminal" id="term">Logs will appear here...</div>
+    </div>
+
+    <script>
+        async function hostBot() {
+            const token = document.getElementById('token').value;
+            const code = document.getElementById('code').value;
+            const res = await fetch('/api/host-code', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({token, code})
+            });
+            const data = await res.json();
+            alert(data.message);
+        }
+        async function stopBot() {
+            const res = await fetch('/api/stop-bot', {method: 'POST'});
+            const data = await res.json();
+            alert(data.message);
+        }
+        setInterval(async () => {
+            const res = await fetch('/api/terminal-logs');
+            const data = await res.json();
+            document.getElementById('term').innerHTML = data.logs.join('<br>');
+        }, 2000);
+    </script>
+</body>
+      </html>
+
